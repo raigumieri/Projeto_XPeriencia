@@ -7,11 +7,22 @@ using XPeriencia.Models;
 
 namespace XPeriencia.Services
 {
+    /// <summary>
+    /// Serviço responsavel por gerenciar apostas no sistema.
+    /// Inclui operações para registrar, listar e remover apostas.
+    /// </summary>
     public static class ApostaService
     {
+        // Nome do arquivo JSON onde as apostas são armazenadas.
         private static readonly string FileName = "apostas";
+
+        // Nome do arquivo JSON onde os usuários são armazenados.
         private static readonly string UsuarioFile = "usuarios";
 
+        /// <summary>
+        /// Exibe o menu de opções para gerenciar apostas.
+        /// Permite ao usuário registrar, listar e remover apostas.
+        /// </summary>
         public static void Menu()
         {
             int opcao;
@@ -46,18 +57,23 @@ namespace XPeriencia.Services
             } while (opcao != 0);
         }
 
+        /// <summary>
+        /// Registra uma nova aposta, atualizando os pontos do usuário conforme o resultado da aposta.
+        /// </summary>
         private static void Registrar()
         {
             var apostas = DataManager<Aposta>.Load(FileName);
             var usuarios = DataManager<Usuario>.Load(UsuarioFile);
 
-            if(usuarios.Count == 0)
+            // Verifica se há usuários cadastrados
+            if (usuarios.Count == 0)
             {
                 Console.WriteLine("Nenhum usuário cadastrado. Cadastre um usuário primeiro.");
                 Console.ReadKey();
                 return;
             }
 
+            //Exibe lista de usuários
             Console.WriteLine("===== Usuários Disponíveis =====");
             foreach(var u in usuarios) 
                 Console.WriteLine($"ID: {u.Id} | Nome: {u.Nome} | Pontos: {u.Pontos}");
@@ -73,6 +89,7 @@ namespace XPeriencia.Services
                 return;
             }
 
+            // Solicita detalhes da aposta
             Console.Write("Qual será a Aposta: ");
             var descricao = Console.ReadLine();
 
@@ -84,13 +101,13 @@ namespace XPeriencia.Services
 
             bool ganhou = resultado == "G";
 
-            // Atualizar pontos do usuário
+            // Atualiza pontos do usuário de acordo com o resultado da aposta
             if (ganhou)
                 usuario.Pontos += valor;
             else
                 usuario.Pontos -= valor;
 
-            // Criar aposta
+            // Cria e adiciona a aposta à lista
             var novaAposta = new Aposta
             {
                 Id = apostas.Count > 0 ? apostas.Max(a => a.Id) + 1 : 1,
@@ -104,7 +121,7 @@ namespace XPeriencia.Services
 
             apostas.Add(novaAposta);
 
-            //Salvar alterações
+            //Salva alterações em arquivos JSON
             DataManager<Aposta>.Save(FileName, apostas);
             DataManager<Usuario>.Save(UsuarioFile, usuarios);
 
@@ -112,6 +129,9 @@ namespace XPeriencia.Services
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Lista todas as apostas registradas, mostrando detalhes como Id, usuário, descrição, valor, data e resultado.
+        /// </summary>
         private static void Listar()
         {
             var apostas = DataManager<Aposta>.Load(FileName);
@@ -133,6 +153,9 @@ namespace XPeriencia.Services
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Remove uma aposta pelo seu ID.
+        /// </summary>
         private static void Remover()
         {
             var apostas = DataManager<Aposta>.Load(FileName);
@@ -149,6 +172,8 @@ namespace XPeriencia.Services
             }
 
             apostas.Remove(aposta);
+
+            // Salva alterações
             DataManager<Aposta>.Save(FileName, apostas);
 
             Console.WriteLine("Aposta removida com sucesso!");

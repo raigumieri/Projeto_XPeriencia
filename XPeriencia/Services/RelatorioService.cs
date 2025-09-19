@@ -7,13 +7,23 @@ using XPeriencia.Models;
 
 namespace XPeriencia.Services
 {
+    /// <summary>
+    /// Serviço responsavel pela geração de relatórios de usuários.
+    /// Inclui informações detalhadas de apostas, reflexões e estatísticas.
+    /// </summary>
     public static class RelatorioService
     {
+        //Arquivos JSON utilizados
         private static readonly string UsuarioFile = "usuarios";
         private static readonly string ApostaFile = "apostas";
         private static readonly string ReflexaoFile = "reflexoes";
+
+        //Pasta onde os relatórios serão salvos
         private static readonly string PastaRelatorios = "Relatorios";
 
+        /// <summary>
+        /// Exibe o menu de relatórios e gerencia as opções do usuário.
+        /// </summary>
         public static void Menu()
         {
             int opcao;
@@ -37,12 +47,18 @@ namespace XPeriencia.Services
             }while (opcao != 0);
         }
 
+        /// <summary>
+        /// Gera um relatório completo de um usuário específico.
+        /// Inclui dados do usuário, apostas, reflexões e estatísticas.
+        /// O relatório é salvo em um arquivo de texto na pasta "Relatorios".
+        /// </summary>
         private static void GerarRelatorioUsuario()
         {
             var usuarios = DataManager<Usuario>.Load(UsuarioFile);
             var apostas = DataManager<Aposta>.Load(ApostaFile);
             var reflexoes = DataManager<Reflexao>.Load(ReflexaoFile);
 
+            //Verifica se há usuários cadastrados
             if (usuarios.Count == 0)
             {
                 Console.WriteLine("Nenhum usuário cadastrado. Cadastre um usuário primeiro.");
@@ -50,10 +66,12 @@ namespace XPeriencia.Services
                 return;
             }
 
+            //Exibe a lista de usuários para seleção
             Console.WriteLine("===== Usuários Disponíveis =====");
             foreach (var u in usuarios)
                 Console.WriteLine($"ID: {u.Id} | Nome: {u.Nome}");
 
+            //Solicita o ID do usuário para gerar o relatório
             Console.Write("Digite o ID do usuário para gerar o relatório: ");
             if (!int.TryParse(Console.ReadLine(), out int usuarioId)) return;
 
@@ -77,6 +95,7 @@ namespace XPeriencia.Services
                 "===== APOSTAS ===== "
             };
 
+            // Filtra as apostas do usuário;
             var apostasUsuario = apostas.Where(a => a.UsuarioId == usuario.Id).ToList();
             if(apostasUsuario.Count > 0)
             {
@@ -94,6 +113,7 @@ namespace XPeriencia.Services
             relatorio.Add("");
             relatorio.Add("===== REFLEXÕES ===== ");
 
+            // Filtra as reflexões do usuário
             var reflexoesUsuario = reflexoes.Where(r => r.UsuarioId == usuario.Id).ToList();
             if(reflexoesUsuario.Count > 0)
             {
@@ -107,6 +127,7 @@ namespace XPeriencia.Services
                 relatorio.Add("Nenhuma reflexão registrada.");
             }
 
+            // Estatísticas de apostas e reflexões
             // ===== ESTATÍSTICAS =====
             relatorio.Add("");
             relatorio.Add("===== ESTATÍSTICAS =====");
@@ -125,19 +146,20 @@ namespace XPeriencia.Services
                 relatorio.Add($"Maior valor em aposta: {maiorAposta}");
                 relatorio.Add($"Menor valor em aposta: {menorAposta}");
                 relatorio.Add($"Média dos valores apostados: {mediaApostas:F2}");
-
-
             }
             else
             {
                 relatorio.Add("Nenhuma estatística disponível para apostas.");
             }
 
-            //Salvar o relatório em um arquivo
+            //Cria a pasta de relatórios se não existir
             if (!Directory.Exists(PastaRelatorios))
                 Directory.CreateDirectory(PastaRelatorios);
 
+            //Nome do arquivo com timestamp
             var nomeArquivo = Path.Combine(PastaRelatorios, $"Relatorio_Usuario_{usuario.Nome}_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+
+            //Salva o relatório em um arquivo de texto
             File.WriteAllLines(nomeArquivo, relatorio);
 
             Console.WriteLine($"Relatório gerado com sucesso: {nomeArquivo}");

@@ -7,10 +7,18 @@ using XPeriencia.Models;
 
 namespace XPeriencia.Services
 {
+    /// <summary>
+    /// Serviço responsavel pelo gerenciamento de usuários.
+    /// Permite cadastrar, listar, atualizar e deletar usuários.
+    /// </summary>
     public static class UsuarioService
     {
+        // Nome do arquivo JSON utilizado para armazenar os usuários
         private static readonly string FileName = "usuarios";
 
+        /// <summary>
+        /// Exibe o menu de opções para gerenciamento de usuários.
+        /// </summary>
         public static void Menu()
         {
             int opcao;
@@ -51,15 +59,14 @@ namespace XPeriencia.Services
 
         }
 
+        /// <summary>
+        /// Cadastra um novo usuário no sistema.
+        /// </summary>
         private static void Cadastrar()
         {
             var usuarios = DataManager<Usuario>.Load(FileName);
 
-            /*
-            Console.Write("Nome do Usuário: ");
-            var nome = Console.ReadLine();
-            */
-
+            // Cria um novo usuário com ID único e pontos iniciais 0
             var usuario = new Usuario
             {
                 Id = usuarios.Count > 0 ? usuarios.Max(u => u.Id) + 1 : 1,
@@ -75,12 +82,17 @@ namespace XPeriencia.Services
             usuario.DataCriacao = DateTime.Now;
 
             usuarios.Add(usuario);
+
+            // Salva os usuários no arquivo JSON
             DataManager<Usuario>.Save(FileName, usuarios);
 
             Console.WriteLine("Usuário cadastrado com sucesso!");
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Lista todos os usuários cadastrados com os seus dados completos.
+        /// </summary>
         private static void Listar()
         {
             var usuarios = DataManager<Usuario>.Load(FileName);
@@ -99,6 +111,9 @@ namespace XPeriencia.Services
 
         }
 
+        /// <summary>
+        /// Atualiza o nome de um usuário existente.
+        /// </summary>
         private static void Atualizar()
         {
             var usuarios = DataManager<Usuario>.Load(FileName);
@@ -120,6 +135,7 @@ namespace XPeriencia.Services
             if(!string.IsNullOrWhiteSpace(nome))
                 usuario.Nome = nome;
 
+            // Salva alterações no arquivo JSON
             DataManager<Usuario>.Save(FileName, usuarios);
 
             Console.WriteLine("Usuário atualizado com sucesso!");
@@ -127,6 +143,9 @@ namespace XPeriencia.Services
 
         }
 
+        /// <summary>
+        /// Remove um usuário existente pelo Id.
+        /// </summary>
         private static void Remover()
         {
             var usuarios = DataManager<Usuario>.Load(FileName);
@@ -143,6 +162,8 @@ namespace XPeriencia.Services
             }
 
             usuarios.Remove(usuario);
+
+            // Salva alterações no arquivo JSON
             DataManager<Usuario>.Save(FileName, usuarios);
 
             Console.WriteLine("Usuário deletado com sucesso!");
