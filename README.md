@@ -37,6 +37,7 @@ Para simplificar o armazenamento (substituindo um banco de dados real), foram ut
     - Pontos finais  
 
 ---
+## 🗂️ Estrutura do Projeto
 
 📦 XPeriencia
 
@@ -99,3 +100,10 @@ Para simplificar o armazenamento (substituindo um banco de dados real), foram ut
 ## 📎 Observações
 - O projeto não utiliza banco de dados real, mas sim arquivos JSON, conforme alternativa permitida pelo professor.  
 - O relatório TXT é gerado para cada usuário, facilitando a análise dos resultados.  
+
+--- 
+
+## Diagrama de Classes 
+<div align="center"> 
+  <img width="600" height="600" align="center" alt="Image" src="https://github.com/user-attachments/assets/4a6b00f7-bf0b-4956-96f6-9c5ecbc556f4" />
+</div>
