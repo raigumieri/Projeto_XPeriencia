@@ -37,7 +37,7 @@ Para simplificar o armazenamento (substituindo um banco de dados real), foram ut
     - Pontos finais  
 
 ---
-## 🗂️ Estrutura do Projeto
+## 🗂️ Diagrama de Pacotes / Estrutura do Projeto
 
 📦 XPeriencia
 
