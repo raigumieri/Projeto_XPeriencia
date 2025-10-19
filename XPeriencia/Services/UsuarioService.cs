@@ -56,7 +56,6 @@ namespace XPeriencia.Services
                 }
 
             } while (opcao != 0);
-
         }
 
         /// <summary>
