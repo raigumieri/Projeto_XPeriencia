@@ -5,6 +5,10 @@ using XPeriencia.API.Models;
 
 namespace XPeriencia.API.Controllers
 {
+    /// <summary>
+    /// Controller para gerenciamento de apostas fictícias.
+    /// Permite registro, consulta e análise de apostas por usuário.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ApostasController : ControllerBase
@@ -16,7 +20,9 @@ namespace XPeriencia.API.Controllers
             _context = context;
         }
 
-        // GET: api/Apostas
+        /// <summary>
+        /// Lista todas as apostas do sistema.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Aposta>>> GetApostas()
         {
@@ -25,7 +31,9 @@ namespace XPeriencia.API.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Apostas/5
+        /// <summary>
+        /// Busca uma aposta específica por ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Aposta>> GetAposta(int id)
         {
@@ -41,7 +49,10 @@ namespace XPeriencia.API.Controllers
             return aposta;
         }
 
-        // GET: api/Apostas/usuario/5
+        /// <summary>
+        /// Retorna todas as apostas de um usuário específico.
+        /// Útil para exibir histórico pessoal.
+        /// </summary>
         [HttpGet("usuario/{usuarioId}")]
         public async Task<ActionResult<IEnumerable<Aposta>>> GetApostasPorUsuario(int usuarioId)
         {
@@ -53,7 +64,10 @@ namespace XPeriencia.API.Controllers
             return apostas;
         }
 
-        // GET: api/Apostas/resultado/Vitoria
+        /// <summary>
+        /// Filtra apostas por resultado (Vitória, Derrota, Empate).
+        /// Case-insensitive para facilitar busca.
+        /// </summary>
         [HttpGet("resultado/{resultado}")]
         public async Task<ActionResult<IEnumerable<Aposta>>> GetApostasPorResultado(string resultado)
         {
@@ -65,15 +79,18 @@ namespace XPeriencia.API.Controllers
             return apostas;
         }
 
-        // POST: api/Apostas
+        /// <summary>
+        /// Registra uma nova aposta no sistema.
+        /// Valida se o usuário existe antes de criar.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Aposta>> PostAposta(Aposta aposta)
         {
-            // Verificar se o usu�rio existe
+            
             var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.Id == aposta.UsuarioId);
             if (!usuarioExiste)
             {
-                return BadRequest("Usu�rio n�o encontrado.");
+                return BadRequest("Usu�rio n�o encontrado.");
             }
 
             aposta.Data = DateTime.Now;
@@ -83,7 +100,9 @@ namespace XPeriencia.API.Controllers
             return CreatedAtAction(nameof(GetAposta), new { id = aposta.Id }, aposta);
         }
 
-        // PUT: api/Apostas/5
+        /// <summary>
+        /// Atualiza uma aposta existente.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAposta(int id, Aposta aposta)
         {
@@ -113,7 +132,9 @@ namespace XPeriencia.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Apostas/5
+        /// <summary>
+        /// Remove uma aposta do sistema.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAposta(int id)
         {

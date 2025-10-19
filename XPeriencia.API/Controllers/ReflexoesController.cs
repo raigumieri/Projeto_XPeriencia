@@ -5,6 +5,10 @@ using XPeriencia.API.Models;
 
 namespace XPeriencia.API.Controllers
 {
+    /// <summary>
+    /// Controller para gerenciamento de reflexões pessoais.
+    /// Permite que usuários registrem pensamentos e sentimentos sobre sua jornada.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ReflexoesController : ControllerBase
@@ -16,7 +20,9 @@ namespace XPeriencia.API.Controllers
             _context = context;
         }
 
-        // GET: api/Reflexoes
+        /// <summary>
+        /// Lista todas as reflexões do sistema.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reflexao>>> GetReflexoes()
         {
@@ -25,7 +31,9 @@ namespace XPeriencia.API.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Reflexoes/5
+        /// <summary>
+        /// Busca uma reflexão específica por ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Reflexao>> GetReflexao(int id)
         {
@@ -41,7 +49,10 @@ namespace XPeriencia.API.Controllers
             return reflexao;
         }
 
-        // GET: api/Reflexoes/usuario/5
+        /// <summary>
+        /// Retorna todas as reflexões de um usuário específico.
+        /// Permite acompanhamento da jornada emocional do usuário.
+        /// </summary>
         [HttpGet("usuario/{usuarioId}")]
         public async Task<ActionResult<IEnumerable<Reflexao>>> GetReflexoesPorUsuario(int usuarioId)
         {
@@ -53,7 +64,10 @@ namespace XPeriencia.API.Controllers
             return reflexoes;
         }
 
-        // GET: api/Reflexoes/sentimento/Feliz
+        /// <summary>
+        /// Busca reflexões que contenham determinado sentimento.
+        /// Busca parcial (Contains) e case-insensitive para maior flexibilidade.
+        /// </summary>
         [HttpGet("sentimento/{sentimento}")]
         public async Task<ActionResult<IEnumerable<Reflexao>>> GetReflexoesPorSentimento(string sentimento)
         {
@@ -65,15 +79,18 @@ namespace XPeriencia.API.Controllers
             return reflexoes;
         }
 
-        // POST: api/Reflexoes
+        /// <summary>
+        /// Registra uma nova reflexão no sistema.
+        /// Valida se o usuário existe antes de criar.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Reflexao>> PostReflexao(Reflexao reflexao)
         {
-            // Verificar se o usu�rio existe
+            // Verificar se o usu�rio existe
             var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.Id == reflexao.UsuarioId);
             if (!usuarioExiste)
             {
-                return BadRequest("Usu�rio n�o encontrado.");
+                return BadRequest("Usu�rio n�o encontrado.");
             }
 
             reflexao.Data = DateTime.Now;
@@ -83,7 +100,9 @@ namespace XPeriencia.API.Controllers
             return CreatedAtAction(nameof(GetReflexao), new { id = reflexao.Id }, reflexao);
         }
 
-        // PUT: api/Reflexoes/5
+        /// <summary>
+        /// Atualiza uma reflexão existente.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReflexao(int id, Reflexao reflexao)
         {
@@ -113,7 +132,9 @@ namespace XPeriencia.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Reflexoes/5
+        /// <summary>
+        /// Remove uma reflexão do sistema.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReflexao(int id)
         {

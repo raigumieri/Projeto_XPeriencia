@@ -4,6 +4,10 @@ using XPeriencia.API.Data;
 
 namespace XPeriencia.API.Controllers
 {
+    /// <summary>
+    /// Controller responsável pela geração de relatórios e estatísticas.
+    /// Demonstra uso avançado de LINQ para agregações e análises de dados.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RelatoriosController : ControllerBase
@@ -15,7 +19,11 @@ namespace XPeriencia.API.Controllers
             _context = context;
         }
 
-        // GET: api/Relatorios/usuario/5
+        /// <summary>
+        /// Gera relatório completo de um usuário específico.
+        /// Inclui estatísticas de apostas, reflexões e histórico recente.
+        /// Demonstra uso de LINQ: GroupBy, Sum, Average, Min, Max, OrderByDescending, Take.
+        /// </summary>
         [HttpGet("usuario/{usuarioId}")]
         public async Task<ActionResult<object>> GetRelatorioUsuario(int usuarioId)
         {
@@ -26,17 +34,19 @@ namespace XPeriencia.API.Controllers
 
             if (usuario == null)
             {
-                return NotFound("Usu�rio n�o encontrado.");
+                return NotFound("Usu�rio n�o encontrado.");
             }
 
-            // LINQ: Estat�sticas de apostas
+            // LINQ: Cálculo de estatísticas agregadas de apostas
             var totalApostas = usuario.Apostas.Count;
             var somaApostas = usuario.Apostas.Sum(a => a.Valor);
             var mediaApostas = usuario.Apostas.Any() ? usuario.Apostas.Average(a => a.Valor) : 0;
             var maiorAposta = usuario.Apostas.Any() ? usuario.Apostas.Max(a => a.Valor) : 0;
             var menorAposta = usuario.Apostas.Any() ? usuario.Apostas.Min(a => a.Valor) : 0;
 
-            // LINQ: Apostas agrupadas por resultado
+            // LINQ: Agrupamento de apostas por resultado
+            // GroupBy agrupa elementos com mesma chave (Resultado)
+            // Select projeta cada grupo em um objeto anônimo com estatísticas
             var apostasPorResultado = usuario.Apostas
                 .GroupBy(a => a.Resultado)
                 .Select(g => new
@@ -47,7 +57,8 @@ namespace XPeriencia.API.Controllers
                 })
                 .ToList();
 
-            // LINQ: Reflex�es agrupadas por sentimento
+            // LINQ: Agrupamento de reflexões por sentimento
+            // OrderByDescending ordena por quantidade (sentimentos mais frequentes primeiro)
             var reflexoesPorSentimento = usuario.Reflexoes
                 .GroupBy(r => r.Sentimento)
                 .Select(g => new
@@ -58,6 +69,7 @@ namespace XPeriencia.API.Controllers
                 .OrderByDescending(x => x.Quantidade)
                 .ToList();
 
+            // Monta o objeto de relatório completo
             var relatorio = new
             {
                 Usuario = new
@@ -82,6 +94,8 @@ namespace XPeriencia.API.Controllers
                     TotalReflexoes = usuario.Reflexoes.Count,
                     ReflexoesPorSentimento = reflexoesPorSentimento
                 },
+
+                // LINQ: Take(5) retorna apenas os 5 primeiros elementos
                 UltimasApostas = usuario.Apostas
                     .OrderByDescending(a => a.Data)
                     .Take(5)
@@ -109,21 +123,26 @@ namespace XPeriencia.API.Controllers
             return Ok(relatorio);
         }
 
-        // GET: api/Relatorios/geral
+        /// <summary>
+        /// Gera relatório geral do sistema com estatísticas globais.
+        /// Demonstra agregações em toda a base de dados e análise temporal.
+        /// </summary>
         [HttpGet("geral")]
         public async Task<ActionResult<object>> GetRelatorioGeral()
         {
-            // LINQ: Estat�sticas gerais do sistema
+            // LINQ: Count assíncrono para contar registros
             var totalUsuarios = await _context.Usuarios.CountAsync();
             var totalApostas = await _context.Apostas.CountAsync();
             var totalReflexoes = await _context.Reflexoes.CountAsync();
 
+            // LINQ: Sum com nullable para evitar erros em tabelas vazias
             var somaGeralApostas = await _context.Apostas.SumAsync(a => (decimal?)a.Valor) ?? 0;
             var mediaGeralApostas = await _context.Apostas.AnyAsync()
                 ? await _context.Apostas.AverageAsync(a => a.Valor)
                 : 0;
 
-            // LINQ: Top 5 usu�rios com mais apostas
+            // LINQ: Projeção com Select para criar ranking de usuários
+            // OrderByDescending para ordenar do maior para o menor
             var topUsuariosApostas = await _context.Usuarios
                 .Select(u => new
                 {
@@ -136,7 +155,8 @@ namespace XPeriencia.API.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            // LINQ: Apostas por m�s
+            // LINQ: Agrupamento por múltiplas propriedades (Ano e Mês)
+            // Permite análise temporal das apostas
             var apostasPorMes = await _context.Apostas
                 .GroupBy(a => new { a.Data.Year, a.Data.Month })
                 .Select(g => new
@@ -167,12 +187,18 @@ namespace XPeriencia.API.Controllers
             return Ok(relatorioGeral);
         }
 
-        // GET: api/Relatorios/apostas/periodo?dataInicio=2024-01-01&dataFim=2024-12-31
+        /// <summary>
+        /// Retorna apostas filtradas por período de datas.
+        /// Demonstra uso de Where com expressões complexas e parâmetros de query.
+        /// </summary>
+        /// <param name="dataInicio">Data inicial do período</param>
+        /// <param name="dataFim">Data final do período</param>
         [HttpGet("apostas/periodo")]
         public async Task<ActionResult<object>> GetApostasPorPeriodo(
             [FromQuery] DateTime dataInicio,
             [FromQuery] DateTime dataFim)
         {
+            // LINQ: Where com múltiplas condições (AND lógico)
             var apostas = await _context.Apostas
                 .Where(a => a.Data >= dataInicio && a.Data <= dataFim)
                 .Include(a => a.Usuario)
@@ -188,6 +214,7 @@ namespace XPeriencia.API.Controllers
                 })
                 .ToListAsync();
 
+            // Estatísticas do período filtrado
             var estatisticas = new
             {
                 TotalApostas = apostas.Count,

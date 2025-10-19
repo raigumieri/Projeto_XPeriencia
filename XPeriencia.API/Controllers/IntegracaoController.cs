@@ -3,18 +3,28 @@ using XPeriencia.API.Services;
 
 namespace XPeriencia.API.Controllers
 {
+    /// <summary>
+    /// Controller responsável por integração com APIs externas.
+    /// Fornece endpoints que consomem serviços de terceiros para enriquecer a experiência do usuário.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class IntegracaoController : ControllerBase
     {
         private readonly ExternalApiService _externalApiService;
 
+        /// <summary>
+        /// Construtor com injeção de dependência do serviço de APIs externas.
+        /// </summary>
         public IntegracaoController(ExternalApiService externalApiService)
         {
             _externalApiService = externalApiService;
         }
 
-        // GET: api/Integracao/frase-motivacional
+        /// <summary>
+        /// Retorna uma frase motivacional aleatória da API Quotable.
+        /// Útil para inspirar usuários em sua jornada de combate ao vício.
+        /// </summary>
         [HttpGet("frase-motivacional")]
         public async Task<ActionResult<object>> GetFraseMotivacional()
         {
@@ -22,13 +32,17 @@ namespace XPeriencia.API.Controllers
 
             return Ok(new
             {
-                Mensagem = "Frase motivacional para voc�!",
+                Mensagem = "Frase motivacional para voc�!",
                 Frase = frase,
                 DataHora = DateTime.Now
             });
         }
 
-        // GET: api/Integracao/cep/01310100
+        /// <summary>
+        /// Consulta dados de endereço através do CEP usando ViaCEP.
+        /// Pode ser usado para completar cadastros de usuários.
+        /// </summary>
+        /// <param name="cep">CEP a ser consultado (com ou sem formatação)</param>
         [HttpGet("cep/{cep}")]
         public async Task<ActionResult<object>> GetEnderecoPorCep(string cep)
         {
@@ -36,17 +50,21 @@ namespace XPeriencia.API.Controllers
 
             if (endereco == null)
             {
-                return NotFound(new { Mensagem = "CEP n�o encontrado ou inv�lido." });
+                return NotFound(new { Mensagem = "CEP n�o encontrado ou inv�lido." });
             }
 
             return Ok(new
             {
-                Mensagem = "Endere�o encontrado com sucesso!",
+                Mensagem = "Endere�o encontrado com sucesso!",
                 Dados = endereco
             });
         }
 
-        // GET: api/Integracao/clima?latitude=-23.5505&longitude=-46.6333
+        /// <summary>
+        /// Retorna dados meteorológicos em tempo real para uma localização.
+        /// Usa coordenadas geográficas (latitude e longitude).
+        /// Exemplo: São Paulo = latitude -235505, longitude -466333
+        /// </summary>
         [HttpGet("clima")]
         public async Task<ActionResult<object>> GetClima([FromQuery] double latitude, [FromQuery] double longitude)
         {
@@ -54,7 +72,7 @@ namespace XPeriencia.API.Controllers
 
             if (clima == null)
             {
-                return NotFound(new { Mensagem = "N�o foi poss�vel obter dados de clima." });
+                return NotFound(new { Mensagem = "N�o foi poss�vel obter dados de clima." });
             }
 
             return Ok(new
@@ -65,7 +83,10 @@ namespace XPeriencia.API.Controllers
             });
         }
 
-        // GET: api/Integracao/motivacao-para-usuario/5
+        /// <summary>
+        /// Endpoint que combina dados do usuário com frase motivacional externa.
+        /// Demonstra integração entre dados locais e APIs externas.
+        /// </summary>
         [HttpGet("motivacao-para-usuario/{usuarioId}")]
         public async Task<ActionResult<object>> GetMotivacaoParaUsuario(int usuarioId)
         {
