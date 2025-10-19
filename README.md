@@ -119,7 +119,7 @@ Para simplificar o armazenamento (substituindo um banco de dados real), foram ut
 - Guilherme Fazito Ziolli Sordili **RM:550539** 
 - Raí Gumieri dos Santos **RM:98287** 
 
-## 📌 Descrição da Sprint 4
+## 📌 Descrição do Projeto
 
 Na **Sprint 4**, o projeto XPeriencia evoluiu de uma aplicação console para uma **API RESTful completa** utilizando **ASP.NET Core Web API**. A aplicação agora oferece endpoints para integração com outros sistemas, persistência robusta com **Entity Framework Core**, consultas avançadas com **LINQ** e integrações com **APIs externas**.
 
